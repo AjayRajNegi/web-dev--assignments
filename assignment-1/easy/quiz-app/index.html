@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Simple Quiz App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .quiz-container {
+        background: #fff;
+        padding: 20px 30px;
+        width: 400px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 15px;
+      }
+
+      .option {
+        margin: 10px 0;
+      }
+
+      button {
+        margin-top: 15px;
+        padding: 10px;
+        width: 100%;
+        border: none;
+        background: #007bff;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      .result {
+        text-align: center;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quiz-container">
+      <h2 id="question">Question text</h2>
+
+      <div class="option">
+        <input type="radio" name="answer" id="a" />
+        <label for="a" id="a_text"></label>
+      </div>
+
+      <div class="option">
+        <input type="radio" name="answer" id="b" />
+        <label for="b" id="b_text"></label>
+      </div>
+
+      <div class="option">
+        <input type="radio" name="answer" id="c" />
+        <label for="c" id="c_text"></label>
+      </div>
+
+      <div class="option">
+        <input type="radio" name="answer" id="d" />
+        <label for="d" id="d_text"></label>
+      </div>
+
+      <button onclick="submitAnswer()">Submit</button>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
