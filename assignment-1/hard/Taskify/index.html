@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Taskify</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+      .newEl {
+        background-color: #f9f9f9;
+        border: 0.5px solid white;
+        color: black;
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 10px;
+      }
+      #div1 {
+        width: 350px;
+        height: 70px;
+        padding: 10px;
+        border: 1px solid #aaaaaa;
+      }
+      .taskFormBlock {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="w-full bg-black min-h-screen p-4 grid grid-cols-4 gap-4">
+      <div
+        class="firstDiv col-span-1 h-full p-4 rounded-xl"
+        style="border: 0.5px solid gray"
+        ondrop="dropHandler(event)"
+        ondragover="dragoverHandler(event)"
+      >
+        <h4>ToDo</h4>
+        <div
+          class="w-full flex justify-between bg-white text-black px-2 text-sm rounded-[5px] py-1 mt-2"
+          onclick="addNew(1)"
+        >
+          <p>Add New</p>
+          <p>+</p>
+        </div>
+      </div>
+      <!-- Second -->
+      <div
+        class="secondDiv col-span-1 h-full p-4 rounded-xl"
+        style="border: 0.5px solid gray"
+        ondrop="dropHandler(event)"
+        ondragover="dragoverHandler(event)"
+      >
+        <h4>In Progress</h4>
+        <div
+          class="w-full flex justify-between bg-white text-black px-2 text-sm rounded-[5px] py-1 mt-2"
+          onclick="addNew(2)"
+        >
+          <p>Add New</p>
+          <p>+</p>
+        </div>
+      </div>
+      <div
+        class="thirdDiv col-span-1 h-full p-4 rounded-xl"
+        style="border: 0.5px solid gray"
+        ondrop="dropHandler(event)"
+        ondragover="dragoverHandler(event)"
+      >
+        <h4>Under Review</h4>
+        <div
+          class="w-full flex justify-between bg-white text-black px-2 text-sm rounded-[5px] py-1 mt-2"
+          onclick="addNew(3)"
+        >
+          <p>Add New</p>
+          <p>+</p>
+        </div>
+      </div>
+      <div
+        class="forthDiv col-span-1 h-full p-4 rounded-xl"
+        style="border: 0.5px solid gray"
+        ondrop="dropHandler(event)"
+        ondragover="dragoverHandler(event)"
+      >
+        <h4>Finished</h4>
+        <div
+          class="w-full flex justify-between bg-white text-black px-2 text-sm rounded-[5px] py-1 mt-2"
+          onclick="addNew(4)"
+        >
+          <p>Add New</p>
+          <p>+</p>
+        </div>
+      </div>
+    </section>
+
+    <div
+      class="taskForm hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-400 p-5 rounded-xl"
+    >
+      <p
+        class="text-black text-[12px] curosr-pointer my-2 text-end"
+        onclick="exitHandler()"
+      >
+        exit
+      </p>
+      <form id="form" class="flex flex-col items-center">
+        <input
+          type="text"
+          name="name"
+          placeholder="Enter Task"
+          class="text-black w-[300px] p-2 rounded-[10px]"
+        /><br />
+        <input
+          type="submit"
+          value="Submit"
+          class="p-1 text-center rounded-[5px] bg-gray-600"
+        />
+      </form>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
