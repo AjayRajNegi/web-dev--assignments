@@ -1,0 +1,30 @@
+{
+  "name": "hotel-booking-platform",
+  "version": "1.0.0",
+  "description": "[Link](https://brindle-goal-102.notion.site/Hotel-Booking-Platform-Backend-Assignment-2ef46b36b2e9800d9a43d17f599a8dba)",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "nodemon --exec tsx src/main.ts",
+    "test": "node test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "@types/pg": "^8.16.0",
+    "nodemon": "^3.1.11",
+    "prisma": "^7.3.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
+    "dotenv": "^17.2.3",
+    "pg": "^8.17.2"
+  }
+}
