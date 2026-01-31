@@ -4,19 +4,38 @@ import { prisma } from "../../lib";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 
+const loginSchema = z.object({
+  email: z.string().email("Email is invalid."),
+  password: z.string().min(6, "Password must be at least 6 characters long."),
+});
+
+const signupSchema = z.object({
+  name: z.string().min(3, "Name is required.").max(50, "Name is too long."),
+  email: z.string().email("Email is invalid."),
+  password: z.string().min(6, "Password must be at least 6 characters long."),
+  role: z.enum(["customer", "owner"], {
+    message: "Role must be either 'customer' or 'owner'",
+  }),
+  phone: z.string().optional(),
+});
+
+type loginSchema = z.infer<typeof loginSchema>;
+type singupInput = z.infer<typeof signupSchema>;
+
 const controller = {
   login: async (_req: Request, res: Response) => {
     try {
-      const { email, password } = _req.body;
+      const validationResult = loginSchema.safeParse(_req.body);
 
-      //Validate input
-      if (!email || !password) {
+      if (!validationResult.success) {
         return res.status(400).json({
           status: false,
           data: null,
           error: "INVALID_REQUEST",
         });
       }
+
+      const { email, password } = validationResult.data;
 
       //Find user
       const user = await prisma.user.findFirst({
@@ -81,15 +100,17 @@ const controller = {
   },
   signup: async (_req: Request, res: Response) => {
     try {
-      const { name, email, password, role, phone } = _req.body;
+      const validationResult = signupSchema.safeParse(_req.body);
 
-      if (!name || !email || !password || !role) {
+      if (!validationResult.success) {
         return res.status(400).json({
           success: false,
           data: null,
           error: "INVALID_REQUEST",
         });
       }
+
+      const { name, email, password, role, phone } = validationResult.data;
 
       //Check is the email exists
       const user = await prisma.user.findUnique({
