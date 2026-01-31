@@ -7,6 +7,7 @@ declare global {
       user?: {
         userId: string;
         email: string;
+        role: string;
       };
     }
   }
@@ -51,11 +52,13 @@ export function authMiddleware(
     const decoded = jwt.verify(token, JWT_SECRET) as {
       userId: string;
       email: string;
+      role: string;
     };
 
     _req.user = {
       userId: decoded.userId,
       email: decoded.email,
+      role: decoded.role,
     };
 
     next();
