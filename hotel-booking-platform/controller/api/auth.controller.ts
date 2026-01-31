@@ -19,7 +19,7 @@ const signupSchema = z.object({
   phone: z.string().optional(),
 });
 
-type loginSchema = z.infer<typeof loginSchema>;
+type loginInput = z.infer<typeof loginSchema>;
 type singupInput = z.infer<typeof signupSchema>;
 
 const controller = {
