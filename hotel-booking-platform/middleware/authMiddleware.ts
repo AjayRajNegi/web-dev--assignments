@@ -47,7 +47,7 @@ export function authMiddleware(
       });
     }
 
-    const JWT_SECRET = process.env.JWT_SECRET || "";
+    const JWT_SECRET = process.env.JWT_SECRET || "secret-key";
 
     const decoded = jwt.verify(token, JWT_SECRET) as {
       userId: string;

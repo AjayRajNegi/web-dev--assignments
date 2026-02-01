@@ -11,13 +11,23 @@ const hotelSchema = z.object({
   amenities: z.array(z.string().min(3, "Amenity name is too short.")),
   images: z.array(z.string().url("Invalid image URL.")).default([]).optional(),
 });
+const roomSchema = z.object({
+  roomNumber: z.string(),
+  roomType: z.string(),
+  pricePerNight: z.number(),
+  maxOccupancy: z.number(),
+  description: z.string().min(10, "Add longer description.").optional(),
+  isAvailable: z.boolean().optional(),
+  images: z.array(z.string().url("Invalid image URL.")).default([]).optional(),
+});
+
 type hotelInput = z.infer<typeof hotelSchema>;
+type roomInput = z.infer<typeof roomSchema>;
 
 const controller = {
   createHotel: async (_req: Request, res: Response) => {
     try {
       const validationResult = hotelSchema.safeParse(_req.body);
-      console.log(validationResult.error, "Data", validationResult.data);
 
       if (!validationResult.success) {
         return res.status(400).json({
@@ -27,57 +37,134 @@ const controller = {
         });
       }
 
-      const { name, description, address, city, country, amenities, images } =
+      const { name, description, city, country, amenities, address, images } =
         validationResult.data;
-
-      if (!_req.user?.userId) {
-        return res.status(401).json({
-          success: false,
-          data: null,
-          error: "UNAUTHORIZED",
-        });
-      }
 
       const hotel = await prisma.hotel.create({
         data: {
-          ownerId: _req.user.userId,
-          name: name,
+          ownerId: _req.user!.userId,
+          name,
           description,
           city,
           country,
           amenities,
+          address,
+          images,
+        },
+        select: {
+          id: true,
+          ownerId: true,
+          name: true,
+          description: true,
+          city: true,
+          country: true,
+          amenities: true,
+          rating: true,
+          totalReviews: true,
         },
       });
 
-      if (!hotel) {
-        return res.status(401).json({
-          success: false,
-          data: null,
-          error: "UNAUTHORIZED",
-        });
-      }
-
       return res.status(201).json({
         success: true,
-        data: {
-          id: hotel.id,
-          ownerId: hotel.ownerId,
-          name: hotel.name,
-          descripton: hotel.description,
-          city: hotel.city,
-          country: hotel.country,
-          amenities: hotel.amenities,
-          rating: hotel.rating,
-          totalReviews: hotel.totalReviews,
-        },
+        data: hotel,
         error: null,
       });
     } catch (error) {
       console.error(error);
-      return res.status(400).json({
+      return res.status(500).json({
         success: false,
         data: null,
-        error: "UNAUTHORIZED",
+        error: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  },
+  createRoom: async (_req: Request, res: Response) => {
+    try {
+      const validationResult = roomSchema.safeParse(_req.body);
+
+      if (!validationResult.success) {
+        return res.status(400).json({
+          success: false,
+          data: null,
+          error: "INVALID_REQUEST",
+        });
+      }
+
+      const hotelId = _req.params.hotelId as string;
+      const userId = _req.user?.userId;
+
+      const hotel = await prisma.hotel.findUnique({
+        where: { id: hotelId },
+        select: { ownerId: true },
+      });
+
+      if (!hotel) {
+        return res.status(404).json({
+          success: false,
+          data: null,
+          error: "HOTEL_NOT_FOUND",
+        });
+      }
+
+      if (hotel.ownerId !== userId) {
+        return res.status(403).json({
+          success: false,
+          data: null,
+          error: "FORBIDDEN23",
+        });
+      }
+
+      const {
+        roomNumber,
+        roomType,
+        pricePerNight,
+        maxOccupancy,
+        description,
+        isAvailable,
+      } = validationResult.data;
+
+      try {
+        const newRoom = await prisma.room.create({
+          data: {
+            hotelId,
+            roomNumber,
+            roomType,
+            pricePerNight,
+            maxOccupancy,
+            description,
+            isAvailable,
+          },
+          select: {
+            id: true,
+            hotelId: true,
+            roomNumber: true,
+            roomType: true,
+            pricePerNight: true,
+            maxOccupancy: true,
+          },
+        });
+
+        return res.status(201).json({
+          success: true,
+          data: newRoom,
+          error: null,
+        });
+      } catch (createError: any) {
+        if (createError.code === "P2002") {
+          return res.status(400).json({
+            success: false,
+            data: null,
+            error: "ROOM_ALREADY_EXISTS",
+          });
+        }
+        throw createError;
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        success: false,
+        data: null,
+        error: "INTERNAL_SERVER_ERROR",
       });
     }
   },
