@@ -4,6 +4,6 @@ import { ownerMiddleware } from "../../middleware/ownerMiddleware";
 
 const router: Router = express.Router();
 
-router.get("/", ownerMiddleware, hotelController.createHotel);
+router.post("/", ownerMiddleware, hotelController.createHotel);
 
 export default router;

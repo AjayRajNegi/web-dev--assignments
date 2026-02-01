@@ -13,9 +13,11 @@ const signupSchema = z.object({
   name: z.string().min(3, "Name is required.").max(50, "Name is too long."),
   email: z.string().email("Email is invalid."),
   password: z.string().min(6, "Password must be at least 6 characters long."),
-  role: z.enum(["customer", "owner"], {
-    message: "Role must be either 'customer' or 'owner'",
-  }),
+  role: z
+    .enum(["customer", "owner"], {
+      message: "Role must be either 'customer' or 'owner'",
+    })
+    .optional(),
   phone: z.string().optional(),
 });
 
@@ -134,7 +136,7 @@ const controller = {
           name,
           email,
           password: hashedPassword,
-          role,
+          role: role || "customer",
           phone,
         },
       });
@@ -145,7 +147,7 @@ const controller = {
           id: newUser.id,
           name,
           email,
-          role,
+          role: newUser.role,
           phone,
         },
         error: null,
