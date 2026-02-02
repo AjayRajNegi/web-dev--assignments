@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { prisma } from "../../lib";
 import jwt from "jsonwebtoken";
-import { z } from "zod";
+import { success, z } from "zod";
 
 const loginSchema = z.object({
   email: z.string().email("Email is invalid."),
@@ -31,7 +31,7 @@ const controller = {
 
       if (!validationResult.success) {
         return res.status(400).json({
-          status: false,
+          success: false,
           data: null,
           error: "INVALID_REQUEST",
         });
@@ -55,17 +55,17 @@ const controller = {
 
       if (!user) {
         return res.status(401).json({
-          status: false,
+          success: false,
           data: null,
           error: "INVALID_CREDENTIALS",
         });
       }
 
-      const isPasswordValid = await bcrypt.hash(password, user.password);
+      const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
         return res.status(401).json({
-          status: false,
+          success: false,
           data: null,
           error: "INVALID_CREDENTIALS",
         });

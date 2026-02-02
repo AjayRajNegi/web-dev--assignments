@@ -168,5 +168,96 @@ const controller = {
       });
     }
   },
+  getHotel: async (_req: Request, res: Response) => {
+    try {
+      const city = _req.query.city as string | undefined;
+      const country = _req.query.country as string | undefined;
+
+      const minPrice = _req.query.minPrice
+        ? Number(_req.query.minPrice)
+        : undefined;
+      const maxPrice = _req.query.maxPrice
+        ? Number(_req.query.maxPrice)
+        : undefined;
+      const minRating = _req.query.minRating
+        ? Number(_req.query.minRating)
+        : undefined;
+
+      const data = await prisma.hotel.findMany({
+        where: {
+          ...(city && {
+            city: {
+              equals: city,
+              mode: "insensitive",
+            },
+          }),
+          ...(country && {
+            country: {
+              equals: country,
+              mode: "insensitive",
+            },
+          }),
+          ...(minRating !== undefined && {
+            rating: {
+              gte: minRating,
+            },
+          }),
+          ...((minPrice !== undefined || maxPrice !== undefined) && {
+            rooms: {
+              some: {
+                pricePerNight: {
+                  ...(minPrice !== undefined && { gte: minPrice }),
+                  ...(maxPrice !== undefined && { lte: maxPrice }),
+                },
+              },
+            },
+          }),
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          city: true,
+          country: true,
+          amenities: true,
+          rating: true,
+          totalReviews: true,
+
+          rooms: {
+            select: {
+              pricePerNight: true,
+            },
+          },
+        },
+      });
+
+      if (data.length === 0) {
+        return res.status(404).json({
+          success: false,
+          data: null,
+          error: "HOTEL_NOT_FOUND",
+        });
+      }
+
+      const formattedData = data.map(({ rooms, ...hotel }) => ({
+        ...hotel,
+        minPricePerNight: rooms.length
+          ? Math.min(...rooms.map((r) => Number(r.pricePerNight)))
+          : null,
+      }));
+
+      return res.json({
+        success: true,
+        data: formattedData,
+        error: null,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        data: null,
+        error: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  },
 };
 export default controller;
