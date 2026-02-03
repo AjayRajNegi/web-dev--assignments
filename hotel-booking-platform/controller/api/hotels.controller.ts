@@ -39,6 +39,7 @@ const controller = {
 
       const { name, description, city, country, amenities, address, images } =
         validationResult.data;
+      const rating = 0.0;
 
       const hotel = await prisma.hotel.create({
         data: {
@@ -64,9 +65,11 @@ const controller = {
         },
       });
 
+      console.log("HOTELLSDFD", hotel.rating);
+
       return res.status(201).json({
         success: true,
-        data: hotel,
+        data: { ...hotel },
         error: null,
       });
     } catch (error) {
@@ -253,6 +256,56 @@ const controller = {
       });
     } catch (error) {
       res.status(500).json({
+        success: false,
+        data: null,
+        error: "INTERNAL_SERVER_ERROR",
+      });
+    }
+  },
+  getSingleHotel: async (_req: Request, res: Response) => {
+    try {
+      const hotelId = _req.params.hotelId as string;
+
+      const hotel = await prisma.hotel.findUnique({
+        where: {
+          id: hotelId,
+        },
+        select: {
+          ownerId: true,
+          name: true,
+          description: true,
+          city: true,
+          country: true,
+          amenities: true,
+          rating: true,
+          totalReviews: true,
+          rooms: {
+            select: {
+              id: true,
+              roomNumber: true,
+              roomType: true,
+              pricePerNight: true,
+              maxOccupancy: true,
+            },
+          },
+        },
+      });
+
+      if (!hotel) {
+        return res.status(404).json({
+          success: false,
+          data: null,
+          error: "HOTEL_NOT_FOUND",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: hotel,
+        error: null,
+      });
+    } catch (error) {
+      return res.status(500).json({
         success: false,
         data: null,
         error: "INTERNAL_SERVER_ERROR",

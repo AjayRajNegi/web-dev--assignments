@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-export function ownerMiddleware(
+export function customerMiddleware(
   _req: Request,
   res: Response,
   next: NextFunction,
@@ -14,13 +14,15 @@ export function ownerMiddleware(
       });
     }
 
-    if (_req.user.role === "customer") {
+    if (_req.user.role === "owner") {
       return res.status(403).json({
         success: false,
         data: null,
         error: "FORBIDDEN",
       });
     }
+    console.log("customer");
+
     next();
   } catch (error) {
     return res.status(403).json({

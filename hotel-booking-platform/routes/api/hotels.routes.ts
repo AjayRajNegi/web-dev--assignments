@@ -8,5 +8,6 @@ const router: Router = express.Router();
 router.post("/", ownerMiddleware, hotelController.createHotel);
 router.post("/:hotelId/rooms", ownerMiddleware, hotelController.createRoom);
 router.get("/", authMiddleware, hotelController.getHotel);
+router.get("/:hotelId", ownerMiddleware, hotelController.getSingleHotel);
 
 export default router;
